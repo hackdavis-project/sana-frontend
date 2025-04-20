@@ -191,7 +191,7 @@ export default function CommunityPage() {
                     {story.title}
                   </h3>
                 )}
-                <p className="text-gray-700 leading-relaxed text-2xl mb-8 flex-grow flex items-center">
+                <p className="text-gray-700 leading-relaxed text-sm mb-8 flex-grow flex items-center">
                   "{story.content}"
                 </p>
                 <div className="flex flex-row justify-between text-sm text-amber-700 font-medium">
