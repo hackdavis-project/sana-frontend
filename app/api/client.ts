@@ -195,6 +195,12 @@ class ApiClient {
     };
   }
 
+  async updateOnboardedStatus(onboarded: boolean): Promise<ApiResponse<null>> {
+    const response = await this.client.patch<ApiResponse<null>>('/auth/onboarded', { onboarded });
+    return response.data;
+  }
+
+
   // Journal methods
   async getJournalEntries(): Promise<ApiResponse<JournalEntry[]>> {
     const response = await this.client.get<JournalEntriesResponse>('/journal/get_entries');

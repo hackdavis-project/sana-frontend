@@ -2,16 +2,25 @@
 
 import { motion } from "framer-motion"
 import { DM_Serif_Display } from "next/font/google"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ScreenLabel } from "@/components/screen-label"
 import { ContinueButton } from "@/components/continue-button"
 import { containerVariants, itemVariants } from "@/lib/animation-variants"
+import { apiClient } from "@/app/api/client"
 
 const dmSerif = DM_Serif_Display({ weight: "400", subsets: ["latin"], variable: "--font-dm-serif" })
 
 export function FinalWelcomeScreen() {
+  const router = useRouter()
+  
   const handleStartJournaling = () => {
     console.log("Start journaling")
+    //updateOnboardedStatus
+    apiClient.updateOnboardedStatus(true).then(() => {
+      console.log("Onboarded status updated")
+      router.push("/")
+    })
   }
 
   return (

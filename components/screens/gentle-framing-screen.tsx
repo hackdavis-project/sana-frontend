@@ -23,14 +23,14 @@ export function GentleFramingScreen({ onNext }: GentleFramingScreenProps) {
       exit="exit"
     >
       <ScreenLabel number={2} />
-      <motion.h2 className={cn("text-2xl md:text-3xl text-[#3a3a3a]", dmSerif.className)} variants={itemVariants}>
+      <motion.h2 className={cn("text-2xl md:text-3xl text-amber-800", dmSerif.className)} variants={itemVariants}>
         You don't have to explain everything now.
       </motion.h2>
-      <motion.p className="text-[#5a5a5a] text-lg max-w-md" variants={itemVariants}>
+      <motion.p className="text-gray-600 text-lg max-w-md" variants={itemVariants}>
         Over time, you'll have space to speak your truth, reflect on what happened, and explore similar stories from
         others who've felt like you.
       </motion.p>
-      <ContinueButton onClick={onNext}>Next</ContinueButton>
+      <ContinueButton onClick={onNext} variant="amber">Next</ContinueButton>
     </motion.div>
   )
 }
