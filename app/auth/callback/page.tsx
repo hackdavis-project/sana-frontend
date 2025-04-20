@@ -2,15 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Montserrat } from "next/font/google";
+
 import { NightingaleSDK } from "@/app/(authorized)/backend/NightingaleSDK";
 
-// Initialize Montserrat font
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-montserrat",
-});
+
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -49,7 +44,7 @@ export default function AuthCallbackPage() {
 
   return (
     <main
-      className={`flex flex-col h-[100svh] bg-gray-100 items-center justify-center p-4 ${montserrat.className}`}
+      className={`flex flex-col h-[100svh] bg-gray-100 items-center justify-center p-4`}
     >
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 flex flex-col items-center">
         {error ? (

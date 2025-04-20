@@ -2,14 +2,10 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Montserrat } from "next/font/google";
+
 import Image from "next/image";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-montserrat",
-});
+
 
 // Component for decorative shapes
 const DecorativeShapes = () => {
@@ -93,7 +89,7 @@ export default function LoginPage() {
 
   return (
     <main
-      className={`flex flex-col h-[100svh] bg-gray-100 items-center justify-center p-4 ${montserrat.className} relative overflow-hidden`}
+      className={`flex flex-col h-[100svh] bg-gray-100 items-center justify-center p-4 relative overflow-hidden`}
     >
       {/* Decorative shapes */}
       <DecorativeShapes />

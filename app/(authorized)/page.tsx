@@ -4,7 +4,6 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Montserrat } from "next/font/google";
 import type { JournalEntry } from "@/lib/types";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { usePlayback } from "@/hooks/usePlayback";
@@ -16,12 +15,7 @@ import { BottomNavigation } from "@/components/journal/BottomNavigation";
 import { VoiceCalibrationModal } from "@/components/voice/VoiceCalibrationModal";
 import { apiClient, CurrentUser } from "@/app/api/client";
 
-// Initialize Montserrat font
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-montserrat",
-});
+
 
 export default function WritingApp() {
   const router = useRouter();
@@ -165,7 +159,7 @@ export default function WritingApp() {
 
   return (
     <main
-      className={`flex flex-col h-[100svh] bg-gray-100 relative ${montserrat.className}`}
+      className={`flex flex-col h-[100svh] bg-gray-100 relative`}
     >
       {/* Voice Calibration Modal */}
       <VoiceCalibrationModal 

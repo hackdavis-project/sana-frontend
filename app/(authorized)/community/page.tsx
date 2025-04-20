@@ -2,19 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Montserrat } from "next/font/google";
+
 import { motion } from "framer-motion";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { BottomNavigation } from "@/components/journal/BottomNavigation";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { apiClient } from "@/app/api/client";
 
-// Initialize Montserrat font
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-montserrat",
-});
+
 
 // Sample user stories - limited to 5 as requested
 const userStories = [
@@ -139,7 +134,7 @@ export default function CommunityPage() {
 
   return (
     <main
-      className={`flex flex-col h-[100svh] bg-gray-100 relative ${montserrat.className}`}
+      className={`flex flex-col h-[100svh] bg-gray-100 relative`}
     >
       <div className="flex-1 overflow-hidden pb-16">
         {/* Fixed Header */}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Montserrat } from "next/font/google";
+
 import {
   BarChart,
   Heart,
@@ -26,12 +26,7 @@ import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { useInsights } from "@/hooks/useInsights";
 import { apiClient } from "@/app/api/client";
 
-// Initialize Montserrat font
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-montserrat",
-});
+
 
 export default function InsightsPage() {
   const router = useRouter();
@@ -82,7 +77,7 @@ export default function InsightsPage() {
 
   return (
     <main
-      className={`flex flex-col h-[100svh] bg-gray-50 relative ${montserrat.className}`}
+      className={`flex flex-col h-[100svh] bg-gray-50 relative`}
     >
       <div className="flex-1 overflow-auto p-6 pb-24">
         <h1 className="text-4xl font-bold text-amber-800 mb-6">

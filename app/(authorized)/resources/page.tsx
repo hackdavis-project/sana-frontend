@@ -2,19 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Montserrat } from "next/font/google";
+
 import { BottomNavigation } from "@/components/journal/BottomNavigation";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { useInsights } from "@/hooks/useInsights";
 import { Heart, Phone, MapPin, FileText, Moon } from "lucide-react";
 import { apiClient } from "@/app/api/client";
 
-// Initialize Montserrat font
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-montserrat",
-});
+
 
 export default function ResourcesPage() {
   const router = useRouter();
@@ -81,7 +76,7 @@ export default function ResourcesPage() {
 
   return (
     <main
-      className={`flex flex-col h-[100svh] bg-gray-100 relative ${montserrat.className}`}
+      className={`flex flex-col h-[100svh] bg-gray-100 relative`}
     >
       <div className="flex-1 overflow-auto p-6 pb-24">
         <h1 className="text-4xl font-bold text-amber-800 mb-6">Resources</h1>

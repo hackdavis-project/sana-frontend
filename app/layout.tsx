@@ -1,12 +1,12 @@
 import type React from "react";
 import "./globals.css";
-import { Montserrat } from "next/font/google";
+import { Merriweather } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const montserrat = Montserrat({
+const merriweather = Merriweather({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-montserrat",
+  weight: ["400", "700"],
+  variable: "--font-merriweather",
 });
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
         <title>Self Journal</title>
         <meta name="description" content="A simple journaling app" />
       </head>
-      <body className={montserrat.variable}>
+      <body className={merriweather.variable}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

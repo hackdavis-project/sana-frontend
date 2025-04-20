@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-merriweather), serif;
 }
 
 @layer utilities {
@@ -100,7 +100,7 @@ body {
   }
 }
 
-/* Add Montserrat font family utility class */
-.font-montserrat {
-  font-family: var(--font-montserrat), sans-serif;
+/* Add Merriweather font family utility class */
+.font-merriweather {
+  font-family: var(--font-merriweather), serif;
 }
