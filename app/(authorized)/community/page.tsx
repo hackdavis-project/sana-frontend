@@ -196,10 +196,10 @@ export default function CommunityPage() {
               className="w-full max-w-2xl bg-white rounded-xl p-10 shadow-lg text-center min-h-[60vh] flex flex-col justify-center"
             >
               <h2 className="text-3xl font-bold text-amber-800 mb-6">
-                That's all the stories for today
+                You’ve reached the end of today’s shared stories
               </h2>
               <p className="text-gray-600 text-xl">
-                Come back tomorrow for more inspiring stories from the community.
+                There are no more community stories right now. Please check back tomorrow—and remember, you’re not alone.
               </p>
             </motion.div>
           </div>
