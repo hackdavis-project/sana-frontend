@@ -81,7 +81,7 @@ export default function LoginPage() {
     );
     const googleOAuthUrl =
       process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL ||
-      "http://192.168.8.215:8000/api/auth/google/login";
+      "https://sana-api.miromiro.dev/api/auth/google/login";
     window.location.href = googleOAuthUrl;
   };
 
