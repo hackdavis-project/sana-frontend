@@ -2,9 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { apiClient } from "@/app/api/client";
-import play from "audio-play";
-// @ts-ignore
-import audioContext from "audio-context";
 
 export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -13,11 +10,27 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
   const [playbackInterval, setPlaybackInterval] =
     useState<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
+  const audioUrlRef = useRef<string | null>(null);
+  
+  // Detect iOS device
+  const isIOSRef = useRef<boolean>(false);
+  
   useEffect(() => {
+    // Check if device is iOS
+    if (typeof window !== "undefined") {
+      isIOSRef.current = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+    
     // Create audio element on client-side
     if (typeof window !== "undefined" && !audioRef.current) {
+      // Create the audio element
       audioRef.current = new Audio();
+      
+      // iOS requires these attributes for better compatibility
+      if (isIOSRef.current) {
+        audioRef.current.setAttribute('playsinline', 'true');
+        audioRef.current.setAttribute('webkit-playsinline', 'true');
+      }
 
       // Add event listeners
       audioRef.current.addEventListener("ended", () => {
@@ -28,12 +41,32 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
         }
         setPlaybackTime(0);
       });
+      
+      // Add error handling
+      audioRef.current.addEventListener("error", (e) => {
+        console.error("Audio playback error:", e);
+        setIsPlaying(false);
+        setIsPlayButtonLoading(false);
+        if (playbackInterval) {
+          clearInterval(playbackInterval);
+          setPlaybackInterval(null);
+        }
+      });
     }
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        // Remove event listeners to prevent memory leaks
+        audioRef.current.removeEventListener("ended", () => {});
+        audioRef.current.removeEventListener("error", () => {});
         audioRef.current = null;
+      }
+      
+      // Clean up object URL
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
       }
     };
   }, []);
@@ -63,24 +96,54 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
         try {
           // Get TTS audio from API
           const audioBlob = await apiClient.generateTTS(text);
+          
+          // Clean up previous URL if exists
+          if (audioUrlRef.current) {
+            URL.revokeObjectURL(audioUrlRef.current);
+          }
 
           // Create object URL for the audio blob
           const audioUrl = URL.createObjectURL(audioBlob);
+          audioUrlRef.current = audioUrl;
 
           if (audioRef.current) {
+            // Set the source
             audioRef.current.src = audioUrl;
-            audioRef.current.play();
-
-            setIsPlaying(true);
-
-            // Set up interval to update playback time
-            const interval = setInterval(() => {
-              if (audioRef.current) {
-                setPlaybackTime(Math.floor(audioRef.current.currentTime));
-              }
-            }, 1000);
-
-            setPlaybackInterval(interval);
+            
+            // iOS requires loading before play
+            audioRef.current.load();
+            
+            // Use a promise to handle play() which returns a promise
+            const playPromise = audioRef.current.play();
+            
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  // Playback started successfully
+                  setIsPlaying(true);
+                  
+                  // Set up interval to update playback time
+                  const interval = setInterval(() => {
+                    if (audioRef.current) {
+                      setPlaybackTime(Math.floor(audioRef.current.currentTime));
+                    }
+                  }, 1000);
+                  
+                  setPlaybackInterval(interval);
+                })
+                .catch(error => {
+                  // Auto-play was prevented or other error
+                  console.error("Playback error:", error);
+                  
+                  // For iOS, we might need to show a play button or message
+                  if (isIOSRef.current) {
+                    console.log("iOS detected - autoplay may be blocked");
+                    // You could set a state here to show a manual play button
+                  }
+                  
+                  setIsPlayButtonLoading(false);
+                });
+            }
           }
 
           setIsPlayButtonLoading(false);
@@ -105,8 +168,11 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
       if (playbackInterval) {
         clearInterval(playbackInterval);
       }
-      if (audioRef.current) {
-        URL.revokeObjectURL(audioRef.current.src);
+      
+      // Clean up object URL
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
       }
     };
   }, [playbackInterval]);
