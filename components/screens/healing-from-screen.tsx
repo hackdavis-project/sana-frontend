@@ -9,6 +9,7 @@ import { ContinueButton } from "@/components/continue-button"
 import { containerVariants, itemVariants, textVariants } from "@/lib/animation-variants"
 import { useHealingExamples } from "./use-healing-examples"
 import { useOnboardingState } from "@/hooks/use-onboarding-state"
+import { TypewriterEffect } from "@/components/typewriter-effect"
 
 const dmSerif = DM_Serif_Display({ weight: "400", subsets: ["latin"], variable: "--font-dm-serif" })
 
@@ -58,18 +59,22 @@ export function HealingFromScreen({ onNext }: HealingFromScreenProps) {
             />
 
             {!isFocused && !situation && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden px-6">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={exampleIndex}
-                    className="text-gray-500/60 text-lg"
+                    className="text-gray-500/60 text-lg px-4"
                     initial="enter"
                     animate="center"
                     exit="exit"
                     variants={textVariants}
                     transition={{ duration: 0.6, ease: "easeInOut" }}
                   >
-                    {healingExamples[exampleIndex]}
+                    <TypewriterEffect 
+                      text={healingExamples[exampleIndex]} 
+                      typingSpeed={40} 
+                      delayAfterComplete={3000} 
+                    />
                   </motion.div>
                 </AnimatePresence>
               </div>

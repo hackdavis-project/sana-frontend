@@ -26,7 +26,7 @@ export function useHealingExamples() {
       if (!isFocused && !situation) {
         setExampleIndex((prev) => (prev + 1) % healingExamples.length)
       }
-    }, 3000)
+    }, 6000) // Increased from 3000ms to 6000ms for slower transitions
 
     return () => clearInterval(interval)
   }, [isFocused, situation, healingExamples.length])
