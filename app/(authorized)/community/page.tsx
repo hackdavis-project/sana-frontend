@@ -16,28 +16,33 @@ import { Headphones } from "lucide-react";
 const userStories = [
   {
     content:
-      "After years of feeling controlled in my relationship, I finally realized I had the power to make my own choices. It started with small things - what I wore, how I spent my free time - and grew from there. Each decision felt like reclaiming a piece of myself.",
+      "i never knew if it was abuse because there weren't bruises. but the way he talked to me made me feel like nothing. like i was always \"too sensitive\" or \"making things up.\" i still catch myself apologizing for everything. even now, i hear his voice in my head. i'm tired of shrinking myself to be loved. i want to trust my emotions again. to feel like they matter.",
     timeAgo: "3 days ago",
+    title: "Emotional Abuse (Relationship)"
   },
   {
     content:
-      "I've struggled with feeling in control of my emotions. Journaling has helped me identify triggers and recognize patterns. Now when I feel overwhelmed, I have strategies to ground myself instead of spiraling.",
+      "my mom always said she was protecting me, but it felt like control. no privacy, no choices, just constant judgment masked as \"love.\" i still second-guess everything. even when i stand up for myself, she turns it around like i'm hurting her. it's confusing. i want to be able to make decisions without guilt. i'm 23, and i still feel like a child in her presence. i want to break out of that.",
     timeAgo: "1 week ago",
+    title: "Parental Control & Gaslighting"
   },
   {
     content:
-      "Control was something I thought I needed in every situation. Through therapy, I've learned to distinguish between what I can control and what I need to accept. This shift has brought me so much peace.",
+      "misgendered again. third time this week. and no one said anything. it sounds small, but it builds up. i shouldn't need a speech just to exist at work. i question myself constantly—am i overreacting? but when i go home, my chest hurts and i'm replaying everything. it's exhausting. people say they support me, but they don't show it. silence hurts just as much as the comments. i just want to feel seen.",
     timeAgo: "2 weeks ago",
+    title: "Workplace Microaggressions & Identity Harm"
   },
   {
     content:
-      "My journey with emotional control has been challenging. I used to think showing emotion was weakness, but now I understand that acknowledging feelings is actually a strength.",
+      "i didn't remember most of it until recently. yelling, slamming doors, hiding in my room with music to drown it out. i told myself it wasn't that bad, but why do i flinch at raised voices? why does my chest tighten around my parents? i want to stop feeling like a scared kid. i want peace. i don't want to carry those moments into every room i walk into now.",
     timeAgo: "3 weeks ago",
+    title: "Childhood Abuse (Suppressed Memory)"
   },
   {
     content:
-      "Learning to let go of controlling others has been transformative. I realize now that the only person I can truly control is myself, and that's been freeing.",
+      "sometimes i convince myself it wasn't that bad. but then i remember how i used to cry in secret and smile in public. how every fight became my fault. how he'd deny what he said minutes after saying it. i kept a list of his words just to believe myself. even now, i reread it to feel sane. i want to trust my memory. i want to believe myself again.",
     timeAgo: "1 month ago",
+    title: "Gaslighting + Self-Doubt"
   },
 ];
 
@@ -89,6 +94,7 @@ export default function CommunityPage() {
       ? sharedEntries.map((entry) => ({
           content: entry.content,
           timeAgo: getTimeAgo(entry.createdAt),
+          title: entry.title || "",
         }))
       : userStories;
 
@@ -182,6 +188,11 @@ export default function CommunityPage() {
                 transition={{ duration: 0.3 }}
                 className="w-full max-w-2xl bg-amber-50 rounded-xl p-10 shadow-lg border border-amber-100 min-h-[60vh] flex flex-col justify-center"
               >
+                {story.title && (
+                  <h3 className="text-amber-800 font-bold text-xl mb-4">
+                    {story.title}
+                  </h3>
+                )}
                 <p className="text-gray-700 leading-relaxed text-2xl mb-8 flex-grow flex items-center">
                   "{story.content}"
                 </p>
