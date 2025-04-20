@@ -24,22 +24,40 @@ export default function ResourcesPage() {
   const { groundingResources, emotionalPatterns, mentalHealthResources } =
     useInsights(entries);
   const [resources, setResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch resources from the API
+    // Compile all journal entries into a single string
+    // Compile all journal entries into a single string using the 'content' field (populated by useJournalEntries)
+    const compiledContent = entries.map(e => e.content || '').join('\n\n');
+
+    // Fetch personalized resources from the API
     const fetchResources = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await apiClient.getResources();
+        const response = await apiClient.getResources(compiledContent);
         if (response.success) {
           setResources(response.data);
+        } else {
+          setError('Failed to fetch resources.');
         }
-      } catch (error) {
-        console.error("Error fetching resources:", error);
+      } catch (err: any) {
+        setError('Error fetching resources: ' + (err?.message || 'Unknown error'));
+      } finally {
+        setLoading(false);
       }
     };
 
+    if (entries.length === 0) {
+      setResources([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
     fetchResources();
-  }, []);
+  }, [entries]);
 
   // Resource icons mapping
   const getResourceIcon = (title: string) => {
@@ -68,108 +86,87 @@ export default function ResourcesPage() {
       <div className="flex-1 overflow-auto p-6 pb-24">
         <h1 className="text-4xl font-bold text-amber-800 mb-6">Resources</h1>
 
-        <div className="space-y-6">
-          {/* Recurring Memories Card */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-amber-50 rounded-lg">
-                <Heart className="w-6 h-6 text-amber-800" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-amber-800 mb-2">
-                  {groundingResources.title}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {groundingResources.description}
-                </p>
-                <a
-                  href={groundingResources.link}
-                  className="text-amber-700 font-medium flex items-center"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push(groundingResources.link);
-                  }}
-                >
-                  View grounding guide <span className="ml-1">↗</span>
-                </a>
-              </div>
-            </div>
+        {loading && (
+          <div className="flex justify-center items-center h-40">
+            <span className="text-amber-700 text-lg font-medium">Loading resources...</span>
           </div>
-
-          {/* Emotional Patterns Card */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-amber-50 rounded-lg">
-                <Moon className="w-6 h-6 text-amber-800" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-amber-800 mb-2">
-                  {emotionalPatterns.title}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {emotionalPatterns.description}
-                </p>
-                <a
-                  href={emotionalPatterns.link}
-                  className="text-amber-700 font-medium flex items-center"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push(emotionalPatterns.link);
-                  }}
-                >
-                  Bedtime techniques <span className="ml-1">↗</span>
-                </a>
-              </div>
-            </div>
+        )}
+        {error && (
+          <div className="bg-red-50 text-red-700 rounded-lg p-4 mb-6">
+            {error}
           </div>
-
-          {/* Mental Health Resources */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex justify-between items-start mb-5">
-              <h3 className="text-xl font-semibold text-amber-800">
-                Mental Health Resources
-              </h3>
-              <Heart className="w-6 h-6 text-amber-700" />
-            </div>
-
-            <div className="space-y-8">
-              {mentalHealthResources.map((resource, index) => (
-                <div
-                  key={index}
-                  className="border-b border-gray-100 pb-6 last:border-0 last:pb-0"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 bg-amber-50 rounded-lg">
-                      {getResourceIcon(resource.title)}
-                    </div>
+        )}
+        {!loading && !error && resources.length === 0 && entries.length > 0 && (
+          <div className="text-gray-500 italic text-center mt-12">
+            No resources found.<br />
+            Try writing about different topics or concerns to see more suggestions.
+          </div>
+        )}
+        {entries.length === 0 && !loading && !error ? (
+          <div className="text-gray-500 italic text-center mt-12">
+            Add a journal entry to get personalized resource recommendations!
+          </div>
+        ) : (
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {resources.map((resource, idx) => (
+              <div
+                key={resource.name + idx}
+                className="bg-white rounded-xl shadow-md p-6 flex flex-col h-full transition hover:shadow-lg border border-amber-50"
+                tabIndex={0}
+                aria-label={`Resource: ${resource.name}`}
+              >
+                <div className="flex items-start gap-4 mb-2">
+                  {resource.image_url && (
+                    <img
+                      src={resource.image_url}
+                      alt={resource.name + ' image'}
+                      className="w-20 h-20 object-cover rounded-md flex-shrink-0"
+                    />
+                  )}
+                  <h2 className="text-xl font-semibold text-amber-800 flex items-center">
+                    {resource.name}
+                  </h2>
+                </div>
+                <p className="text-gray-700 mb-4 flex-1">{resource.description}</p>
+                <div className="space-y-2 mt-auto">
+                  {resource.phone && (
                     <div>
-                      <h4 className="text-lg font-semibold text-amber-800 mb-2">
-                        {resource.title}
-                      </h4>
-                      <p className="text-gray-600 mb-4">
-                        {resource.description}
-                      </p>
                       <a
-                        href={resource.link}
-                        className="text-amber-700 font-medium flex items-center"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (resource.link.startsWith("http")) {
-                            window.open(resource.link, "_blank");
-                          } else {
-                            router.push(resource.link);
-                          }
-                        }}
+                        href={`tel:${resource.phone}`}
+                        className="text-amber-700 hover:underline font-medium flex items-center gap-2"
+                        aria-label={`Call ${resource.phone}`}
                       >
-                        {resource.linkText} <span className="ml-1">↗</span>
+                        <Phone className="w-5 h-5" />
+                        {resource.phone}
                       </a>
                     </div>
-                  </div>
+                  )}
+                  {resource.website && (
+                    <div>
+                      <a
+                        href={resource.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-amber-700 hover:underline font-medium flex items-center gap-2"
+                        aria-label={`Visit website: ${resource.website}`}
+                      >
+                        <MapPin className="w-5 h-5" />
+                        {resource.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  )}
+                  {resource.address && (
+                    <div className="text-gray-600 flex items-center gap-2">
+                      <FileText className="w-5 h-5" />
+                      {resource.address}
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
+
       </div>
 
       {/* Bottom Navigation */}
