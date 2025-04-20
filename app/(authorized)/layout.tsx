@@ -31,6 +31,7 @@ export default function AuthorizedLayout({
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
+        router.push("/login");
       }
     };
     checkAuth();
