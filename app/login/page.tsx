@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 
-
-
 // Component for decorative shapes
 const DecorativeShapes = () => {
   return (
@@ -83,7 +81,7 @@ export default function LoginPage() {
     );
     const googleOAuthUrl =
       process.env.NEXT_PUBLIC_GOOGLE_OAUTH_URL ||
-      "http://localhost:8000/api/auth/google/login";
+      "http://192.168.8.215:8000/api/auth/google/login";
     window.location.href = googleOAuthUrl;
   };
 
