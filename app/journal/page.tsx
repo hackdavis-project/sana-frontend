@@ -233,22 +233,15 @@ export default function JournalPage() {
   const transcriptionResult = useSttStore((state) => state.transcriptionResult);
   const setTranscriptionResult = useSttStore((state) => state.setTranscriptionResult);
 
-  // Function to create a new voice note using useJournalEntries
-  const createVoiceNote = useCallback(
-    (text: string) => {
-      if (!text || text.trim().length === 0) {
-        console.warn("Cannot create voice note with empty or whitespace-only text");
-        return;
-      }
-      console.log("createVoiceNote called with text:", text);
-      // Create a title from the first few words (up to 5)
-      const words = text.trim().split(" ");
-      const titlePreview = words.slice(0, 5).join(" ");
-      const title = `Voice Note: ${titlePreview}${words.length > 5 ? "..." : ""}`;
-      addEntry({ title, content: text.trim(), moodValue: 3 });
-    },
-    [addEntry]
-  );
+  // Handler for ActionMenu transcription completion
+  const handleTranscriptionComplete = useCallback((transcribedText: string) => {
+    if (!transcribedText || transcribedText.trim().length === 0) {
+      alert("Transcription was empty. Please try again.");
+      return;
+    }
+    // Use the journal store directly to create a new entry
+    useJournalStore.getState().createEntry(transcribedText);
+  }, []);
   // Define the handler for when transcription is complete
   const handleTranscriptionComplete = useCallback(
     (text: string) => {
@@ -319,7 +312,6 @@ export default function JournalPage() {
         <ActionMenu
           isExpanded={isActionMenuExpanded}
           onToggle={toggleActionMenu}
-          // Pass the handler function to the ActionMenu
           onTranscriptionComplete={handleTranscriptionComplete}
         />
       </div>

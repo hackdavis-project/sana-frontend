@@ -2,8 +2,7 @@
 import { Mic, Pause, Play, Check } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { apiClient } from "@/app/api/client";
-import { voiceEvents } from "@/app/events/voiceEvents";
-import { useSttStore } from "@/app/store/sttStore";
+import { voiceEvents } from "@/app/events/voiceEvents"; // Removed useSttStore
 
 // Position enum for button placement
 export enum ButtonPosition {
@@ -165,24 +164,15 @@ export function ActionMenu({
             const transcribedText = response.data.transcription.full_text;
             console.log("Transcribed text:", transcribedText);
 
-            // Only call the callback, don't publish the event
             if (transcribedText) {
-              console.log(
-                "Setting transcription result in zustand store"
-              );
-              alert("Transcription successful! Adding to journal...");
-              useSttStore.getState().setTranscriptionResult(transcribedText);
-              // onTranscriptionComplete(transcribedText); // Now handled globally
+              onTranscriptionComplete(transcribedText);
             } else {
-              alert("Transcription was empty. Please try again.");
               console.warn("Transcribed text is empty");
             }
           } else {
             console.error("Transcription failed:", response);
-            alert("Transcription failed. Please try again.");
           }
         } catch (error) {
-          alert("There was an error during transcription. Please try again.");
           console.error("Error transcribing audio:", error);
         } finally {
           // Clean up
@@ -212,31 +202,6 @@ export function ActionMenu({
     return `${mins.toString().padStart(2, "0")}:${secs
       .toString()
       .padStart(2, "0")}`;
-  };
-
-  // For demonstration/testing purposes - create a mock transcription
-  const testTranscription = () => {
-    console.log("Testing transcription...");
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      const mockTexts = [
-        "Today was a challenging day. I struggled with feelings of anxiety, but I managed to practice some deep breathing exercises that helped me calm down.",
-        "I'm proud of myself for speaking up in the meeting today. It wasn't easy, but I expressed my concerns and felt heard.",
-        "I noticed I've been avoiding social gatherings lately. I think I need to be gentle with myself and recognize that healing takes time.",
-        "Writing in this journal is helping me process my thoughts and gain clarity about my situation.",
-      ];
-
-      // Select a random mock text
-      const mockText = mockTexts[Math.floor(Math.random() * mockTexts.length)];
-      console.log("Sending mock transcription:", mockText);
-
-      // Call the prop callback only
-      console.log("Calling onTranscriptionComplete callback with mock text");
-      onTranscriptionComplete(mockText);
-
-      setIsProcessing(false);
-    }, 1500);
   };
 
   return (

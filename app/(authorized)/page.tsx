@@ -140,9 +140,14 @@ export default function WritingApp() {
           isExpanded={isActionMenuExpanded}
           onToggle={toggleActionMenu}
           position={ButtonPosition.RIGHT}
-          onFinishRecording={(audioData) => {
-            console.log("Recording finished", audioData);
-            // Handle the finished recording
+          onTranscriptionComplete={(transcribedText) => {
+            if (!transcribedText || transcribedText.trim().length === 0) {
+              alert("Transcription was empty. Please try again.");
+              return;
+            }
+            // Use the journal store logic to create and select the new entry
+            const newEntry = createNewEntry(transcribedText);
+            selectEntry(newEntry);
           }}
         />
       </div>

@@ -297,24 +297,16 @@ class ApiClient {
   // Speech-to-text methods
   async transcribeAudio(audioFile: File): Promise<ApiResponse<TranscriptionResponse>> {
     console.log("transcribeAudio called with file:", audioFile.name, "size:", audioFile.size);
-    
-    // Use mock response in development environment
-    if (this.useMocks) {
-      console.log("Using mock transcription");
-      return mockResponses.transcription(audioFile);
-    }
-    
-    // Real API call for production
     try {
       const formData = new FormData();
       formData.append('file', audioFile);
-      
+
       const response = await this.client.post<TranscriptionResponse>('/spt/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       return {
         success: true,
         data: response.data
