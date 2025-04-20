@@ -36,6 +36,7 @@ interface CurrentUser {
   name: string;
   voice_id?: string;
   onboarded?: boolean;
+  voice_setup: boolean;
 }
 
 interface AuthResponse {
@@ -361,6 +362,12 @@ class ApiClient {
       success: true,
       data: { entries }
     };
+  }
+
+  // Voice setup method
+  async voiceSetup(): Promise<ApiResponse<null>> {
+    const response = await this.client.post<ApiResponse<null>>('/auth/voice_setup');
+    return response.data;
   }
 
   // TTS methods

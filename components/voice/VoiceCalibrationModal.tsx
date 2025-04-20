@@ -15,13 +15,7 @@ export function VoiceCalibrationModal({
   onClose,
   onVoiceCalibrated,
 }: VoiceCalibrationModalProps) {
-  // Check localStorage on component mount
-  useEffect(() => {
-    const hasSkippedVoiceCalibration = localStorage.getItem('skippedVoiceCalibration') === 'true';
-    if (hasSkippedVoiceCalibration && isOpen) {
-      onClose();
-    }
-  }, [isOpen, onClose]);
+  // No need to check localStorage as we're now checking voice_setup flag from the API
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -138,22 +132,41 @@ export function VoiceCalibrationModal({
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={(e) => {
+            // This prevents closing when clicking inside the modal content
+            // but allows closing when clicking the backdrop
+            if (e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
         >
           <motion.div
-            className="bg-white rounded-xl shadow-lg p-6 w-11/12 max-w-md mx-auto"
+            className="bg-white rounded-xl shadow-lg p-6 w-11/12 max-w-md mx-auto relative"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-
           >
+            {/* Close button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
+              aria-label="Close modal"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <div className="text-center mb-6">
               <h2 className="text-xl font-semibold text-amber-900 mb-2">Voice Calibration</h2>
               <p className="text-gray-600">
@@ -237,6 +250,17 @@ export function VoiceCalibrationModal({
                 </div>
               )}
 
+              {step === "success" && (
+                <div className="text-center p-4">
+                  <button
+                    onClick={() => onClose()}
+                    className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md transition-colors shadow-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+
               {error && (
                 <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-md text-center">
                   {error}
@@ -249,20 +273,10 @@ export function VoiceCalibrationModal({
               {step !== "uploading" && step !== "success" && (
                 <>
                   {step === "intro" && (
-                    <div className="grid grid-cols-2 gap-4 w-full">
-                      <button
-                        onClick={() => {
-                          // Store the skip preference in localStorage
-                          localStorage.setItem('skippedVoiceCalibration', 'true');
-                          onClose();
-                        }}
-                        className="px-4 py-2 border border-gray-300 text-gray-600 hover:text-gray-800 hover:border-gray-400 rounded-md transition-colors"
-                      >
-                        I'm OK
-                      </button>
+                    <div className="flex justify-center w-full">
                       <button
                         onClick={startRecording}
-                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md transition-colors shadow-sm"
+                        className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md transition-colors shadow-sm"
                       >
                         Start Recording
                       </button>
