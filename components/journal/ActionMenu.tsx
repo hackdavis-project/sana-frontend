@@ -242,16 +242,6 @@ export function ActionMenu({
   return (
     <div className="absolute right-6 bottom-28 flex items-center z-10">
       <div className="relative">
-        {/* Debug button for testing transcription */}
-        {process.env.NODE_ENV !== "production" && (
-          <button
-            className="absolute right-[-120px] top-[-120px] bg-amber-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-amber-600 transition-colors"
-            onClick={testTranscription}
-            disabled={isProcessing}
-          >
-            {isProcessing ? "Processing..." : "Create Voice Note"}
-          </button>
-        )}
 
         {/* Vertical stack of controls */}
         <div className="flex flex-col-reverse items-center">
