@@ -35,6 +35,7 @@ interface CurrentUser {
   email: string;
   name: string;
   voice_id?: string;
+  onboarded?: boolean;
 }
 
 interface AuthResponse {
