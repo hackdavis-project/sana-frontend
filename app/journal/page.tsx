@@ -7,7 +7,7 @@ import { BottomNavigation } from "@/components/journal/BottomNavigation";
 import { ActionMenu } from "@/components/journal/ActionMenu";
 import { DeleteConfirmation } from "@/components/journal/DeleteConfirmation";
 import { AnimatePresence, motion } from "framer-motion";
-import type { JournalEntry as LibJournalEntry } from "@/lib/types";
+import type { JournalEntry as LibJournalEntry, MoodRating } from "@/lib/types";
 import { getMockEntries } from "@/app/utils/mockData";
 import { useSttStore } from "@/app/store/sttStore";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
@@ -169,20 +169,16 @@ export default function JournalPage() {
 
   // Play the current entry (Refactored from useEffect)
   const handlePlayClick = useCallback(() => {
-    if (isPlaying) {
-      // Logic to stop playback if needed
-      setIsPlaying(false);
-      console.log("Stopping playback (placeholder)");
-      return;
-    }
+    if (!currentEntry) return;
 
+    setIsPlaying(true);
     setIsPlayButtonLoading(true);
-    console.log("Initiating playback (placeholder)");
-    // Simulate loading the audio & starting playback
+
+    // Simulate audio processing delay
     setTimeout(() => {
       setIsPlayButtonLoading(false);
-      setIsPlaying(true);
-      console.log("Playback started (placeholder)");
+      // In a real app, this would trigger audio playback
+      console.log("Playing entry:", currentEntry);
       // Add actual playback logic here if applicable
     }, 1000);
   }, [isPlaying]); // Dependencies: isPlaying state
@@ -191,6 +187,31 @@ export default function JournalPage() {
   const handleStopPlayback = useCallback(() => {
     setIsPlaying(false);
   }, []);
+
+  // Handle mood change
+  const handleMoodChange = useCallback((mood: MoodRating) => {
+    if (!currentEntry) return;
+    
+    // Create updated entry with new mood
+    const updatedEntry = {
+      ...currentEntry,
+      mood: mood,
+    };
+    
+    // Update current entry with the new mood
+    setCurrentEntry(updatedEntry);
+    
+    // Update entry in the entries list
+    const updatedEntries = entries.map(entry => 
+      entry.id === currentEntry.id ? updatedEntry : entry
+    );
+    setEntries(updatedEntries);
+    
+    // Mark as unsaved
+    setIsSaved(false);
+    
+    console.log("Mood updated:", mood);
+  }, [currentEntry, entries]);
 
   // Save the current entry
   const handleSave = useCallback(() => {
@@ -274,6 +295,7 @@ export default function JournalPage() {
             onDelete={handleDeleteClick}
             onStopPlayback={handleStopPlayback}
             onCreateNote={createVoiceNote}
+            onMoodChange={handleMoodChange}
           />
         )}
       </div>

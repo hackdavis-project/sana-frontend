@@ -2,10 +2,11 @@
 
 import type React from "react";
 import { useRef, useEffect, useState } from "react";
-import { Menu } from "lucide-react";
-import type { JournalEntry } from "@/lib/types";
+import { Menu, Smile } from "lucide-react";
+import type { JournalEntry, MoodRating } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { PlaybackControls } from "./PlaybackControls";
+import { MoodModal } from "./MoodModal";
 import { motion, AnimatePresence } from "framer-motion";
 // Import Wave component from react-wavify
 import Wave from "react-wavify";
@@ -22,6 +23,7 @@ interface JournalEditorProps {
   onDelete?: () => void;
   onStopPlayback?: () => void;
   onCreateNote?: (transcribedText: string) => void; // Keep this prop for future use if needed
+  onMoodChange?: (mood: MoodRating) => void; // Prop for mood changes
 }
 
 export function JournalEditor({
@@ -36,6 +38,7 @@ export function JournalEditor({
   onDelete,
   onStopPlayback,
   onCreateNote,
+  onMoodChange,
 }: JournalEditorProps) {
   // Logging for debugging: log when currentEntry changes
   useEffect(() => {
@@ -48,6 +51,7 @@ export function JournalEditor({
   const [controlsDisabled, setControlsDisabled] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [waveKey, setWaveKey] = useState(0);
+  const [isMoodModalOpen, setIsMoodModalOpen] = useState(false);
 
   // Auto-focus the textarea on mount and when currentEntry changes
   useEffect(() => {
@@ -269,6 +273,22 @@ export function JournalEditor({
             </div>
 
             <div className="flex items-center gap-2 ml-4">
+              {/* Mood button */}
+              <button
+                onClick={() => setIsMoodModalOpen(true)}
+                className={`flex items-center gap-1 text-amber-600 hover:text-amber-800 text-sm font-medium p-1 rounded-full transition-colors duration-200 ${
+                  controlsDisabled ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={controlsDisabled}
+              >
+                <Smile className="w-4 h-4" />
+                {currentEntry?.mood ? (
+                  <span>{currentEntry.mood.label}</span>
+                ) : (
+                  <span>Add Mood</span>
+                )}
+              </button>
+
               {/* Delete button */}
               {onDelete && (
                 <button
@@ -325,6 +345,19 @@ export function JournalEditor({
           {formatDate(currentEntry.date)}
         </motion.div>
       </div>
+
+      {/* Mood Modal */}
+      <MoodModal
+        isOpen={isMoodModalOpen}
+        onClose={() => setIsMoodModalOpen(false)}
+        onSaveMood={(mood) => {
+          if (onMoodChange) {
+            onMoodChange(mood);
+          }
+          setIsMoodModalOpen(false);
+        }}
+        initialMood={currentEntry?.mood}
+      />
     </div>
   );
 }
