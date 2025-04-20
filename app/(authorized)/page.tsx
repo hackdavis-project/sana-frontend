@@ -33,6 +33,7 @@ export default function WritingApp() {
     isSaved,
     playButtonReady,
     createNewEntry,
+    addEntry,
     selectEntry,
     updateEntryTitle,
     updateEntryContent,
@@ -140,13 +141,17 @@ export default function WritingApp() {
           isExpanded={isActionMenuExpanded}
           onToggle={toggleActionMenu}
           position={ButtonPosition.RIGHT}
-          onTranscriptionComplete={(transcribedText) => {
+          onTranscriptionComplete={async (transcribedText) => {
             if (!transcribedText || transcribedText.trim().length === 0) {
-              alert("Transcription was empty. Please try again.");
+              // Optionally, show a toast or non-blocking notification here
               return;
             }
-            // Use the journal store logic to create and select the new entry
-            const newEntry = createNewEntry(transcribedText);
+            // Add a new entry with the transcript content and select it
+            const newEntry = await addEntry({
+              title: "Voice Note",
+              content: transcribedText,
+              moodValue: 3,
+            });
             selectEntry(newEntry);
           }}
         />
