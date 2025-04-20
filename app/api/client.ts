@@ -85,6 +85,7 @@ interface Resource {
   id: string;
   name: string;
   description: string;
+  address: string;
   phone?: string;
   website?: string;
   category: string;
@@ -265,26 +266,95 @@ class ApiClient {
 
   // Resources methods
   async getResources(journalEntry: string): Promise<ApiResponse<Resource[]>> {
-    const response = await this.client.post('/resources/get', { journal_entry: journalEntry });
+    //const response = await this.client.post('/resources/get', { journal_entry: journalEntry });
     // The API returns { resources: Resource[] }
-    if (response.data && Array.isArray(response.data.resources)) {
-      return {
-        success: true,
-        data: response.data.resources,
-      };
-    } else {
-      return {
-        success: false,
-        data: [],
-        message: 'No resources found or invalid response format.'
-      };
+
+    return {
+      success: true,
+      data: [
+        {
+          "name": "Empower Yolo",
+          "description": "Provides comprehensive services for victims of domestic violence, sexual assault, stalking, and human trafficking in Yolo County. Offers 24/7 crisis lines, emergency shelter, counseling, legal assistance, resource centers, and more.",
+          "phone": "530-661-6336",
+          "website": "https://empoweryolo.org/",
+          "address": "441 D St, Davis, CA 95616",
+          "image_url": "https://img.logo.dev/empoweryolo.org",
+          "focus": [
+            "Domestic Violence",
+            "Sexual Assault",
+            "Human Trafficking",
+            "Shelter",
+            "Counseling",
+            "Legal Aid",
+            "Crisis",
+            "Yolo County"
+          ]
+        },
+        {
+          "name": "UC Davis CARE (Center for Advocacy, Resources & Education)",
+          "description": "Provides confidential advocacy, support, education, and healing services specifically for UC Davis students, staff, and faculty impacted by sexual harassment, sexual violence, intimate partner violence, and stalking.",
+          "phone": "530-752-3299",
+          "website": "https://care.ucdavis.edu/",
+          "address": "Confidential Location on UC Davis Campus",
+          "image_url": "https://img.logo.dev/ucdavis.edu",
+          "focus": [
+            "Sexual Assault",
+            "Domestic Violence",
+            "Stalking",
+            "Harassment",
+            "Advocacy",
+            "UC Davis Students"
+          ]
+        },
+        {
+          "name": "WEAVE (Sacramento)",
+          "description": "Major regional provider of crisis intervention services for survivors of domestic violence, sexual assault, and sex trafficking in Sacramento County.",
+          "phone": "916-920-2952 (24/7 Support Line)",
+          "website": "https://www.weaveinc.org/",
+          "address": "1900 K St, Sacramento, CA 95811",
+          "image_url": "https://img.logo.dev/weaveinc.org",
+          "focus": [
+            "Domestic Violence",
+            "Sexual Assault",
+            "Sex Trafficking",
+            "Crisis",
+            "Shelter",
+            "Counseling",
+            "Sacramento County"
+          ]
+        }
+      ]
     }
+    // if (response.data && Array.isArray(response.data.resources)) {
+    //   return {
+    //     success: true,
+    //     data: response.data.resources,
+    //   };
+    // } else {
+    //   return {
+    //     success: false,
+    //     data: [],
+    //     message: 'No resources found or invalid response format.'
+    //   };
+    // }
   }
 
   // Feelings tracker methods
   async getFeelingData(): Promise<ApiResponse<FeelingData>> {
-    const response = await this.client.get<ApiResponse<FeelingData>>('/feelings');
-    return response.data;
+    // Mock a week of mood ratings
+    const today = new Date();
+    const entries = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - (6 - i));
+      return {
+        date: date.toISOString().slice(0, 10),
+        rating: Math.floor(Math.random() * 5) + 1 // 1-5 scale
+      };
+    });
+    return {
+      success: true,
+      data: { entries }
+    };
   }
 
   // TTS methods
