@@ -264,19 +264,21 @@ class ApiClient {
   }
 
   // Resources methods
-  async getResources(): Promise<ApiResponse<Resource[]>> {
-    const response = await this.client.get<ApiResponse<Resource[]>>('/resources');
-    return response.data;
-  }
-
-  async getResourcesByCategory(category: string): Promise<ApiResponse<Resource[]>> {
-    const response = await this.client.get<ApiResponse<Resource[]>>(`/resources?category=${category}`);
-    return response.data;
-  }
-
-  async getResourceSuggestions(entry_id: string): Promise<ApiResponse<Resource[]>> {
-    const response = await this.client.get<ApiResponse<Resource[]>>(`/resources/suggest/${entry_id}`);
-    return response.data;
+  async getResources(journalEntry: string): Promise<ApiResponse<Resource[]>> {
+    const response = await this.client.post('/resources/get', { journal_entry: journalEntry });
+    // The API returns { resources: Resource[] }
+    if (response.data && Array.isArray(response.data.resources)) {
+      return {
+        success: true,
+        data: response.data.resources,
+      };
+    } else {
+      return {
+        success: false,
+        data: [],
+        message: 'No resources found or invalid response format.'
+      };
+    }
   }
 
   // Feelings tracker methods
