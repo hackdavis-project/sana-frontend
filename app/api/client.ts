@@ -30,6 +30,13 @@ interface User {
   username: string;
 }
 
+interface CurrentUser {
+  user_id: string;
+  email: string;
+  name: string;
+  voice_id?: string;
+}
+
 interface AuthResponse {
   user: User;
   token: string;
@@ -111,11 +118,11 @@ const mockResponses = {
           "I noticed I've been avoiding social gatherings lately. I think I need to be gentle with myself and recognize that healing takes time.",
           "Writing in this journal is helping me process my thoughts and gain clarity about my situation."
         ];
-        
+
         // Select a random mock text
         const randomText = mockTexts[Math.floor(Math.random() * mockTexts.length)];
         console.log("MOCK: Generated transcription text:", randomText);
-        
+
         resolve({
           success: true,
           data: {
@@ -155,7 +162,7 @@ class ApiClient {
       },
       (error) => Promise.reject(error)
     );
-    
+
     console.log("ApiClient initialized, using mocks:", this.useMocks);
   }
 
@@ -178,12 +185,20 @@ class ApiClient {
     return { success: true, data: null };
   }
 
+  async getCurrentUser(): Promise<ApiResponse<CurrentUser>> {
+    const response = await this.client.get<CurrentUser>('/auth/me');
+    return {
+      success: true,
+      data: response.data
+    };
+  }
+
   // Journal methods
   async getJournalEntries(): Promise<ApiResponse<JournalEntry[]>> {
     const response = await this.client.get<JournalEntriesResponse>('/journal/get_entries');
-    return { 
-      success: true, 
-      data: response.data.entries 
+    return {
+      success: true,
+      data: response.data.entries
     };
   }
 
@@ -198,45 +213,45 @@ class ApiClient {
       }
       return { success: false, message: 'Journal entry not found', data: {} as JournalEntry };
     }
-    return { 
-      success: false, 
-      message: response.message || 'Failed to fetch journal entries', 
-      data: {} as JournalEntry 
+    return {
+      success: false,
+      message: response.message || 'Failed to fetch journal entries',
+      data: {} as JournalEntry
     };
   }
 
   async createJournalEntry(params?: { content?: string, feelingRating?: number }): Promise<ApiResponse<CreateJournalEntryResponse>> {
     const response = await this.client.get<CreateJournalEntryResponse>('/journal/create_entry');
-    return { 
-      success: true, 
-      data: response.data 
+    return {
+      success: true,
+      data: response.data
     };
   }
 
   async updateJournalEntry(request: UpdateJournalEntryRequest): Promise<ApiResponse<JournalEntry>> {
     const response = await this.client.post<JournalEntry>('/journal/update_entry', request);
-    return { 
-      success: true, 
-      data: response.data 
+    return {
+      success: true,
+      data: response.data
     };
   }
 
   async deleteJournalEntry(entry_id: string): Promise<ApiResponse<null>> {
     await this.client.delete(`/journal/delete_entry?entry_id=${entry_id}`);
-    return { 
-      success: true, 
-      data: null 
+    return {
+      success: true,
+      data: null
     };
   }
 
   async toggleJournalEntrySharing(entry_id: string, shared: boolean): Promise<ApiResponse<JournalEntry>> {
-    const response = await this.client.post<JournalEntry>('/journal/update_entry', { 
-      entry_id, 
-      shared 
+    const response = await this.client.post<JournalEntry>('/journal/update_entry', {
+      entry_id,
+      shared
     });
-    return { 
-      success: true, 
-      data: response.data 
+    return {
+      success: true,
+      data: response.data
     };
   }
 
@@ -281,13 +296,13 @@ class ApiClient {
   async cloneVoice(audioFile: File): Promise<ApiResponse<VoiceCloneResponse>> {
     const formData = new FormData();
     formData.append('file', audioFile);
-    
+
     const response = await this.client.post<VoiceCloneResponse>('/tts/clone_voice', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
-    
+
     return {
       success: true,
       data: response.data
@@ -332,6 +347,7 @@ export const apiClient = new ApiClient();
 export type {
   ApiResponse,
   User,
+  CurrentUser,
   AuthResponse,
   LoginRequest,
   RegisterRequest,

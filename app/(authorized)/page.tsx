@@ -13,7 +13,8 @@ import { JournalSidebar } from "@/components/journal/JournalSidebar";
 import { DeleteConfirmation } from "@/components/journal/DeleteConfirmation";
 import { ActionMenu, ButtonPosition } from "@/components/journal/ActionMenu";
 import { BottomNavigation } from "@/components/journal/BottomNavigation";
-import { apiClient } from "@/app/api/client";
+import { VoiceCalibrationModal } from "@/components/voice/VoiceCalibrationModal";
+import { apiClient, CurrentUser } from "@/app/api/client";
 
 // Initialize Montserrat font
 const montserrat = Montserrat({
@@ -25,7 +26,8 @@ const montserrat = Montserrat({
 export default function WritingApp() {
   const router = useRouter();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-
+  const [user, setUser] = useState<CurrentUser | null>(null);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
   // Use our custom hook for journal entries
   const {
     entries,
@@ -40,6 +42,29 @@ export default function WritingApp() {
     deleteEntry,
   } = useJournalEntries();
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await apiClient.getCurrentUser();
+        if (response.success) {
+          setUser(response.data);
+          console.log('User info fetched:', response.data);
+          
+          // Check if voice calibration is needed
+          if (!response.data.voice_id) {
+            setShowVoiceModal(true);
+          }
+        } else {
+          console.error('Failed to fetch user info:', response.message);
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   // Use our custom hook for playback
   const { isPlaying, isPlayButtonLoading, handlePlayClick, setIsPlaying } =
     usePlayback(isSaved, playButtonReady);
@@ -51,6 +76,25 @@ export default function WritingApp() {
     } else {
       handlePlayClick();
     }
+  };
+  
+  // Handle voice calibration completion
+  const handleVoiceCalibrated = async (voiceId: string) => {
+    // Update user state locally
+    if (user) {
+      setUser({
+        ...user,
+        voice_id: voiceId
+      });
+    }
+    setShowVoiceModal(false);
+  };
+  
+  // Handle skipping voice calibration
+  const handleSkipVoiceCalibration = () => {
+    // Store the user's preference in localStorage
+    localStorage.setItem('skippedVoiceCalibration', 'true');
+    setShowVoiceModal(false);
   };
 
   // UI state
@@ -123,6 +167,13 @@ export default function WritingApp() {
     <main
       className={`flex flex-col h-[100svh] bg-gray-100 relative ${montserrat.className}`}
     >
+      {/* Voice Calibration Modal */}
+      <VoiceCalibrationModal 
+        isOpen={showVoiceModal}
+        onClose={handleSkipVoiceCalibration}
+        onVoiceCalibrated={handleVoiceCalibrated}
+      />
+
       {/* Full screen text area */}
       <div className="flex-1 relative">
         <JournalEditor
