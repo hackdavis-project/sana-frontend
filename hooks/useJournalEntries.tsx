@@ -83,24 +83,42 @@ export function useJournalEntries() {
       };
       setEntries((prev) => [newEntry, ...prev]);
       setCurrentEntry(newEntry);
+      
+      // Create the entry in the backend
+      let createdEntry = newEntry;
       try {
         const response = await apiClient.createJournalEntry({
           content: newEntry.content,
           feelingRating: newEntry.mood?.value || 3,
         });
+        
         if (response.success) {
-          const createdEntry = {
+          createdEntry = {
             ...newEntry,
             id: response.data.entry_id,
             date: new Date(),
           };
+          
+          // Update local state with the created entry
           setEntries((prev) => [createdEntry, ...prev.filter((entry) => entry.id !== newEntry.id)]);
           setCurrentEntry(createdEntry);
+          
+          // Immediately save the content to ensure it's persisted
+          await apiClient.updateJournalEntry({
+            entry_id: createdEntry.id,
+            note: createdEntry.content,
+            title: createdEntry.title,
+          });
+          
+          // Mark as saved after successful update
+          setIsSaved(true);
+          console.log("New entry created and saved to backend:", createdEntry.id);
         }
       } catch (error) {
-        console.error("Error creating entry:", error);
+        console.error("Error creating or saving entry:", error);
       }
-      return newEntry;
+      
+      return createdEntry;
     },
     []
   );

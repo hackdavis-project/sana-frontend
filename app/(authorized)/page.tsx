@@ -197,7 +197,21 @@ export default function WritingApp() {
               content: transcribedText,
               moodValue: 3,
             });
-            selectEntry(newEntry);
+            
+            // Force an immediate save to the backend
+            try {
+              await apiClient.updateJournalEntry({
+                entry_id: newEntry.id,
+                note: newEntry.content,
+                title: newEntry.title,
+              });
+              console.log('Voice memo saved to backend successfully');
+            } catch (error) {
+              console.error('Error saving voice memo to backend:', error);
+            }
+            
+            // Select the entry after saving
+            await selectEntry(newEntry);
           }}
         />
       </div>

@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { BottomNavigation } from "@/components/journal/BottomNavigation";
+import { PlaybackControls } from "@/components/journal/PlaybackControls";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
+import { usePlayback } from "@/hooks/usePlayback";
 import { apiClient } from "@/app/api/client";
 import { Headphones } from "lucide-react";
 
@@ -47,6 +49,14 @@ export default function CommunityPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [sharedEntries, setSharedEntries] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentStoryText, setCurrentStoryText] = useState("");
+  
+  // Initialize playback hook
+  const {
+    isPlaying,
+    isPlayButtonLoading,
+    handlePlayClick,
+  } = usePlayback(true, true);
 
   useEffect(() => {
     // Fetch shared entries from the API
@@ -67,6 +77,11 @@ export default function CommunityPage() {
 
     fetchSharedEntries();
   }, []);
+
+  const onHeadphonesClick = (story: { content: string }) => {
+    setCurrentStoryText(story.content);
+    handlePlayClick(story.content);
+  };
 
   // Use API data if available, otherwise use sample data (limited to 5)
   const displayStories =
@@ -172,7 +187,21 @@ export default function CommunityPage() {
                 </p>
                 <div className="flex flex-row justify-between text-sm text-amber-700 font-medium">
                   <span>Shared {story.timeAgo}</span>
-                  <Headphones className="w-5 h-5" />
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onHeadphonesClick(story);
+                    }}
+                    className="focus:outline-none"
+                    aria-label="Listen to story"
+                  >
+                    <PlaybackControls
+                      isSaved={true}
+                      isPlaying={isPlaying && currentStoryText === story.content}
+                      isPlayButtonLoading={isPlayButtonLoading && currentStoryText === story.content}
+                      onPlayClick={() => onHeadphonesClick(story)}
+                    />
+                  </button>
                 </div>
               </motion.div>
             </div>

@@ -27,13 +27,13 @@ export function EntryItem({
       }`}
     >
       <button
-        className="flex-1 text-left p-3 hover:bg-gray-100 active:bg-gray-200 transition-colors rounded-lg"
+        className="flex-1 text-left p-3 hover:bg-gray-100 active:bg-gray-200 transition-colors rounded-lg overflow-hidden"
         onClick={() => onSelect(entry)}
       >
-        <div className="text-xs text-amber-700 mb-1">
+        <div className="text-xs text-amber-700 mb-1 truncate">
           {formatDate(entry.date)}
         </div>
-        <div className="text-sm font-medium text-amber-900 mb-1">
+        <div className="text-sm font-medium text-amber-900 mb-1 truncate">
           {entry.title}
         </div>
         <div className="text-sm text-gray-800 line-clamp-2">
@@ -41,7 +41,7 @@ export function EntryItem({
         </div>
       </button>
       <button
-        className="p-3 mr-1 rounded-full active:bg-red-100"
+        className="p-3 mr-1 rounded-full active:bg-red-100 flex-shrink-0"
         onClick={(e) => onDelete(entry, e)}
         aria-label="Delete entry"
       >
