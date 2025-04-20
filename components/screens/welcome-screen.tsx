@@ -23,13 +23,13 @@ export function WelcomeScreen({ onNext }: WelcomeScreenProps) {
       exit="exit"
     >
       <ScreenLabel number={1} />
-      <motion.h1 className={cn("text-3xl md:text-4xl text-[#3a3a3a]", dmSerif.className)} variants={itemVariants}>
+      <motion.h1 className={cn("text-3xl md:text-4xl text-amber-800", dmSerif.className)} variants={itemVariants}>
         Your story matters.
       </motion.h1>
-      <motion.p className="text-[#5a5a5a] text-lg max-w-md" variants={itemVariants}>
+      <motion.p className="text-gray-600 text-lg max-w-md" variants={itemVariants}>
         This space was created to help you understand, express, and heal from what you've been through.
       </motion.p>
-      <ContinueButton onClick={onNext}>Begin</ContinueButton>
+      <ContinueButton onClick={onNext} variant="amber">Begin</ContinueButton>
     </motion.div>
   )
 }

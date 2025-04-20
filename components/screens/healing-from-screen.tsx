@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { ScreenLabel } from "@/components/screen-label"
 import { ContinueButton } from "@/components/continue-button"
 import { containerVariants, itemVariants, textVariants } from "@/lib/animation-variants"
-import { useHealingExamples } from "@/hooks/use-healing-examples"
+import { useHealingExamples } from "./use-healing-examples"
 import { useOnboardingState } from "@/hooks/use-onboarding-state"
 
 const dmSerif = DM_Serif_Display({ weight: "400", subsets: ["latin"], variable: "--font-dm-serif" })
@@ -33,7 +33,7 @@ export function HealingFromScreen({ onNext }: HealingFromScreenProps) {
       <ScreenLabel number={3} />
 
       <div className="flex flex-col items-center space-y-8">
-        <motion.h2 className={cn("text-2xl md:text-3xl text-[#3a3a3a]", dmSerif.className)} variants={itemVariants}>
+        <motion.h2 className={cn("text-2xl md:text-3xl text-amber-800", dmSerif.className)} variants={itemVariants}>
           I want to start healing from
         </motion.h2>
 
@@ -49,7 +49,7 @@ export function HealingFromScreen({ onNext }: HealingFromScreenProps) {
           <div className="relative">
             <textarea
               ref={inputRef}
-              className="w-full p-4 border border-[#ddd] rounded-xl bg-transparent focus:outline-none focus:ring-1 focus:ring-[#ede9e3] resize-none text-center min-h-[80px]"
+              className="w-full p-4 border border-amber-200 rounded-xl bg-transparent focus:outline-none focus:ring-1 focus:ring-amber-300 resize-none text-center min-h-[80px]"
               value={situation}
               onChange={(e) => setSituation(e.target.value)}
               onFocus={() => setIsFocused(true)}
@@ -62,7 +62,7 @@ export function HealingFromScreen({ onNext }: HealingFromScreenProps) {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={exampleIndex}
-                    className="text-[#5a5a5a]/60 text-lg"
+                    className="text-gray-500/60 text-lg"
                     initial="enter"
                     animate="center"
                     exit="exit"
@@ -78,7 +78,7 @@ export function HealingFromScreen({ onNext }: HealingFromScreenProps) {
         </motion.div>
       </div>
 
-      <ContinueButton onClick={onNext} disabled={!situation.trim()} variant="minimal">
+      <ContinueButton onClick={onNext} disabled={!situation.trim()} variant="amber">
         continue
       </ContinueButton>
     </motion.div>

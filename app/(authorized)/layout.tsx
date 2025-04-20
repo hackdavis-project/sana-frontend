@@ -22,6 +22,9 @@ export default function AuthorizedLayout({
           setUser(response.data);
           console.log('User info fetched:', response.data);
           setIsAuthenticated(true);
+          if (!response.data.onboarded) {
+            router.push('/onboarding');
+          }
         } else {
           console.error('Failed to fetch user info:', response.message);
         }
