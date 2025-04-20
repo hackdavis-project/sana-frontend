@@ -145,7 +145,7 @@ class ApiClient {
   private token: string | null = null;
   private useMocks: boolean = process.env.NODE_ENV === 'development';
 
-  constructor(baseURL = 'http://localhost:8000/api') {
+  constructor(baseURL = 'https://sana-api.miromiro.dev/api') {
     this.client = axios.create({
       baseURL,
       headers: {
