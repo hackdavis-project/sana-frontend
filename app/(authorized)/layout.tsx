@@ -20,16 +20,17 @@ export default function AuthorizedLayout({
         const response = await apiClient.getCurrentUser();
         if (response.success) {
           setUser(response.data);
-          console.log('User info fetched:', response.data);
+          console.log("User info fetched:", response.data);
           setIsAuthenticated(true);
           if (!response.data.onboarded) {
-            router.push('/onboarding');
+            router.push("/onboarding");
           }
         } else {
-          console.error('Failed to fetch user info:', response.message);
+          console.error("Failed to fetch user info:", response.message);
+          router.push("/login");
         }
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error("Error fetching user info:", error);
       }
     };
     checkAuth();
