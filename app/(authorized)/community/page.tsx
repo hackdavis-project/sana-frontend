@@ -8,8 +8,7 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import { BottomNavigation } from "@/components/journal/BottomNavigation";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { apiClient } from "@/app/api/client";
-
-
+import { Headphones } from "lucide-react";
 
 // Sample user stories - limited to 5 as requested
 const userStories = [
@@ -171,8 +170,9 @@ export default function CommunityPage() {
                 <p className="text-gray-700 leading-relaxed text-2xl mb-8 flex-grow flex items-center">
                   "{story.content}"
                 </p>
-                <div className="text-sm text-amber-700 font-medium">
-                  Shared {story.timeAgo}
+                <div className="flex flex-row justify-between text-sm text-amber-700 font-medium">
+                  <span>Shared {story.timeAgo}</span>
+                  <Headphones className="w-5 h-5" />
                 </div>
               </motion.div>
             </div>
