@@ -46,7 +46,7 @@ const userStories = [
 
 export default function CommunityPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("calendar"); // Using calendar tab ID for the community page
+  
   const { createNewEntry } = useJournalEntries();
   const [currentIndex, setCurrentIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -96,13 +96,7 @@ export default function CommunityPage() {
     return `${Math.floor(diffInDays / 30)} months ago`;
   };
 
-  // Handle tab changes
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (tab !== "calendar") {
-      router.push(tab === "home" ? "/" : `/${tab}`);
-    }
-  };
+
 
   // Handle next story
   const handleNext = () => {
@@ -249,11 +243,20 @@ export default function CommunityPage() {
         </p>
       </div>
 
+
       {/* Bottom Navigation */}
       <BottomNavigation
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onNewEntry={createNewEntry}
+        activeTab={"community"}
+        onTabChange={(tab) => {
+          if (tab === "community") {
+            router.push("/community");
+          } else if (tab !== "home") {
+            router.push(`/${tab}`);
+          } else {
+            router.push("/");
+          }
+        }}
+        onNewEntry={() => {}}
       />
     </main>
   );

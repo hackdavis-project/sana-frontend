@@ -138,9 +138,9 @@ export function BottomNavigation({
 
       <button
         className={`flex flex-col items-center justify-center p-2 ${
-          activeTab === "calendar" ? "text-amber-800" : "text-gray-500"
+          activeTab === "community" ? "text-amber-800" : "text-gray-500"
         }`}
-        onClick={() => onTabChange("calendar")}
+        onClick={() => onTabChange("community")}
       >
         <Users className="w-6 h-6" />
         <span className="text-xs mt-1">Community</span>

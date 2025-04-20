@@ -112,7 +112,7 @@ export default function WritingApp() {
 
   // Handle tab changes
   const handleTabChange = (tab: string) => {
-    if (tab === "calendar") {
+    if (tab === "community") {
       router.push("/community");
     } else if (tab !== "home") {
       router.push(`/${tab}`);
