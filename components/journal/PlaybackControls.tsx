@@ -31,19 +31,19 @@ export function PlaybackControls({
       aria-label={isPlaying ? "Playing audio" : "Play audio"}
     >
       {/* Record grooves - only visible when playing */}
-      <div
+      <span
         className={twMerge(
           "absolute inset-0 flex items-center justify-center transition-opacity duration-500",
           isPlaying ? "opacity-100" : "opacity-0"
         )}
       >
-        <div className="w-8 h-8 rounded-full border border-gray-600 opacity-60"></div>
-        <div className="absolute w-6 h-6 rounded-full border border-gray-600 opacity-70"></div>
-        <div className="absolute w-4 h-4 rounded-full border border-gray-600 opacity-80"></div>
-        <div className="absolute w-2 h-2 rounded-full bg-amber-500"></div>
-      </div>
+        <span className="w-8 h-8 rounded-full border border-gray-600 opacity-60"></span>
+        <span className="absolute w-6 h-6 rounded-full border border-gray-600 opacity-70"></span>
+        <span className="absolute w-4 h-4 rounded-full border border-gray-600 opacity-80"></span>
+        <span className="absolute w-2 h-2 rounded-full bg-amber-500"></span>
+      </span>
 
-      <div
+      <span
         className={twMerge(
           "flex items-center justify-center z-10 transition-transform duration-300",
           isPlaying ? "animate-spin" : ""
@@ -59,7 +59,7 @@ export function PlaybackControls({
         ) : (
           <Headphones className="w-5 h-5" />
         )}
-      </div>
+      </span>
     </button>
   );
 }
