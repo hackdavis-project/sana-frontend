@@ -2,6 +2,18 @@
 
 import { useState, useEffect, useRef } from "react";
 import { apiClient } from "@/app/api/client";
+import { KokoroTTS } from "kokoro-js";
+
+const model_id = "onnx-community/Kokoro-82M-v1.0-ONNX";
+
+var tts: KokoroTTS;
+
+(async () => {
+  tts = await KokoroTTS.from_pretrained(model_id, {
+    dtype: "q8", // Options: "fp32", "fp16", "q8", "q4", "q4f16"
+    device: "wasm", // Options: "wasm", "webgpu" (web) or "cpu" (node). If using "webgpu", we recommend using dtype="fp32".
+  });
+})();
 
 export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -11,25 +23,27 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
     useState<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
-  
+
   // Detect iOS device
   const isIOSRef = useRef<boolean>(false);
-  
+
   useEffect(() => {
     // Check if device is iOS
     if (typeof window !== "undefined") {
-      isIOSRef.current = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      isIOSRef.current =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as any).MSStream;
     }
-    
+
     // Create audio element on client-side
     if (typeof window !== "undefined" && !audioRef.current) {
       // Create the audio element
       audioRef.current = new Audio();
-      
+
       // iOS requires these attributes for better compatibility
       if (isIOSRef.current) {
-        audioRef.current.setAttribute('playsinline', 'true');
-        audioRef.current.setAttribute('webkit-playsinline', 'true');
+        audioRef.current.setAttribute("playsinline", "true");
+        audioRef.current.setAttribute("webkit-playsinline", "true");
       }
 
       // Add event listeners
@@ -41,7 +55,7 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
         }
         setPlaybackTime(0);
       });
-      
+
       // Add error handling
       audioRef.current.addEventListener("error", (e) => {
         console.error("Audio playback error:", e);
@@ -62,7 +76,7 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
         audioRef.current.removeEventListener("error", () => {});
         audioRef.current = null;
       }
-      
+
       // Clean up object URL
       if (audioUrlRef.current) {
         URL.revokeObjectURL(audioUrlRef.current);
@@ -95,52 +109,56 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
 
         try {
           // Get TTS audio from API
-          const audioBlob = await apiClient.generateTTS(text);
-          
+          const audio = await tts.generate(text, {
+            // Use `tts.list_voices()` to list all available voices
+            voice: "af_heart",
+          });
+
           // Clean up previous URL if exists
           if (audioUrlRef.current) {
             URL.revokeObjectURL(audioUrlRef.current);
           }
 
           // Create object URL for the audio blob
+          const audioBlob = new Blob([audio.audio], { type: "audio/wav" });
           const audioUrl = URL.createObjectURL(audioBlob);
           audioUrlRef.current = audioUrl;
 
           if (audioRef.current) {
             // Set the source
             audioRef.current.src = audioUrl;
-            
+
             // iOS requires loading before play
             audioRef.current.load();
-            
+
             // Use a promise to handle play() which returns a promise
             const playPromise = audioRef.current.play();
-            
+
             if (playPromise !== undefined) {
               playPromise
                 .then(() => {
                   // Playback started successfully
                   setIsPlaying(true);
-                  
+
                   // Set up interval to update playback time
                   const interval = setInterval(() => {
                     if (audioRef.current) {
                       setPlaybackTime(Math.floor(audioRef.current.currentTime));
                     }
                   }, 1000);
-                  
+
                   setPlaybackInterval(interval);
                 })
-                .catch(error => {
+                .catch((error) => {
                   // Auto-play was prevented or other error
                   console.error("Playback error:", error);
-                  
+
                   // For iOS, we might need to show a play button or message
                   if (isIOSRef.current) {
                     console.log("iOS detected - autoplay may be blocked");
                     // You could set a state here to show a manual play button
                   }
-                  
+
                   setIsPlayButtonLoading(false);
                 });
             }
@@ -168,7 +186,7 @@ export function usePlayback(isSaved: boolean, playButtonReady: boolean) {
       if (playbackInterval) {
         clearInterval(playbackInterval);
       }
-      
+
       // Clean up object URL
       if (audioUrlRef.current) {
         URL.revokeObjectURL(audioUrlRef.current);
